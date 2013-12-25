@@ -31,8 +31,6 @@ amount. Default is 60 days.
 local player_list = {}
 
 function echat.player_add( name )
-	-- We are doing no check here for now. Could be
-	-- used for mailbots etc
 	if not player_list[name] then
 		player_list[name] = {}
 		player_list[name]['last_login'] = os.time( )
@@ -91,4 +89,17 @@ function echat.player_load_data( )
 		return true
 	end
 	return false
+end
+
+function echat.player_init( )
+	if not echat.player_load_data( ) then
+		echat.log_sysmessage( 'playerdata', 'Attempt to load Player data failed. Creating new...' )
+		echat.player_save_data()
+		if not echat.player_load_data( ) then
+			echat.log_sysmessage( 'playerdata', 'Was not able to load recreated file. Maybe missing Permissions?' )
+			freeminer.log( 'error', 'echat] Loading/Recreating of player data not possible. Please check your permissions' )
+			return false
+		end
+	end
+	return true
 end

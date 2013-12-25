@@ -21,7 +21,9 @@ function echat.send_global( user, message )
 	for key, value in pairs( channels['global'] ) do
 		-- value should be the username
 		if user ~= value then
-			freeminer.chat_send_player( value, message )
+			if not echat.player_get_data( value, 'ignore' )[user] then
+				freeminer.chat_send_player( value, message )
+			end
 		end
 	end
 end
@@ -34,7 +36,14 @@ function echat.send_local( user, message )
 	elseif distance == 0 then
 		return nil
 	end
-	-- pass
+	-- Collect all players in range and send the message
+	local user_ref = freeminer.get_user_by_name( user )
+	local player_list = freeminer.get_objects_inside_radius( user_ref:getpos() , distance )
+	for key, value in pairs( player_list ) do
+		if value:is_player() and value:get_player_name() ~= user then
+			freeminer.chat_send_player( value:get_player_name(), message )
+		end
+	end
 end
 
 local function player_within_distance( p1, p2, dist )

@@ -1,6 +1,6 @@
 --[[
 Rework of the Chatplus Mod.
-eChat v00.01.65810
+eChat v00.01.75026
 
 This mod aims at providing some more functionality
 to the basic chat of minetest/freeminer.
@@ -31,23 +31,28 @@ if not test_file then
 	test_file = io.open( echat.datapath..'startuptest', 'w' )
 	if not test_file then
 		freeminer.log( 'error' , 'echat] Could not access datapath...' )
-		return nil
+		return false
 	end
 	io.close( test_file )
-	test_file = nil
+	test_file = false
 end
 
-dofile( freeminer.get_modpath( 'echat' )..'/config_lib.lua' )
+local modpath = freeminer.get_modpath( 'echat' )
+
+dofile( modpath..'/config_lib.lua' )
 if not echat.config_init( ) then
 	freeminer.log( 'error', 'echat] Initiating config failed' )
-	return nil
+	return false
 end
 
-dofile( freeminer.get_modpath( 'echat' )..'/log_manager.lua' )
+dofile( modpath..'/log_manager.lua' )
 if not echat.init_log( ) then
 	freeminer.log( 'error', 'echat] Initiating Logging failed' )
-	return nil
+	return false
 end
+
+dofile( modpath..'/player_data.lua' )
+echat.player_init()
 
 
 
